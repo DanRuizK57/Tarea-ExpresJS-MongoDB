@@ -1,4 +1,5 @@
 import UsuarioModel from '../models/usuario.model.js';
+import MensajeModel from '../models/mensaje.model.js';
 import bcrypt from 'bcrypt';
 
 function getDescription(req, res){
@@ -111,9 +112,33 @@ async function obtenerUsuarioPorEmail(email){
 
 }
 
+async function crearMensaje(req, res) {
+    try {
+      let userId = req.body.userId;
+      let message = req.body.message;
+  
+      let error = "Falta el campo ";
+  
+      if(userId === undefined){
+          error += "userId"
+          res.status(400).send({error: error});
+      } else if (message === undefined){
+          error += "message"
+          res.status(400).send({error: error});
+      } else {
+          await MensajeModel.create({userId: userId, message: message});
+          res.send(true);
+      }
+    
+    } catch (err) {
+      res.status(500).send({error: err});
+    }
+  }
+
 
 export { getDescription, 
          registrarUsuario,  
          obtenerUsuarios,
-         login
+         login,
+         crearMensaje
         };
