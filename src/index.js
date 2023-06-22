@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import envs from './configs/environments.js';
 import mensajeriaRoutes from './routes/mensajeria.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import connect from './configs/mongo.js';
 
 const app = express();
@@ -10,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('', mensajeriaRoutes);
+app.use('/auth', authRoutes);
 
 console.log('Conectando a la base de datos...');
 connect()
