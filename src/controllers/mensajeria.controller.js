@@ -18,8 +18,6 @@ async function registrarUsuario(req, res) {
 
     let error = "Falta el campo ";
 
-    console.log(validarDniRepetido(dni))
-
     if(name === undefined){
         error += "name"
         res.status(400).send({error: error});
@@ -69,4 +67,53 @@ async function obtenerUsuarios(req, res) {
       }
 }
 
-export { getDescription, registrarUsuario,  obtenerUsuarios};
+async function login(req, res) {
+    try {
+        let email = req.body.email;
+        let password = req.body.password;
+        let error = "Falta el campo ";
+
+        if(email === undefined){
+            error += "email"
+            res.status(400).send({error: error});
+        } else if (password === undefined){
+            error += "password"
+            res.status(400).send({error: error});
+        }
+
+        let usuario = await obtenerUsuarioPorEmail(email);
+
+        const passwordCoincide = await bcrypt.compare(password, usuario.password);
+
+        if (passwordCoincide){
+            res.send(true);
+        } else {
+            res.send(false);
+        }
+        
+      } catch (err) {
+        res.status(500).send({error: err});
+      }
+}
+
+async function obtenerUsuarioPorEmail(email){
+    let usuario = null;
+    const usuarios = await UsuarioModel.find({});
+
+    for (let i = 0; i < usuarios.length; i++) {
+        const usuarioArray = usuarios[i];
+        if (usuarioArray.email === email) {
+            usuario = usuarioArray;
+        }
+    }
+
+    return usuario;
+
+}
+
+
+export { getDescription, 
+         registrarUsuario,  
+         obtenerUsuarios,
+         login
+        };
