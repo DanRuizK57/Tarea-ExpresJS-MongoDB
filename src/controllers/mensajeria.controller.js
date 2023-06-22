@@ -16,8 +16,9 @@ async function registrarUsuario(req, res) {
     const passwordEncriptada = bcrypt.hashSync(password, 10);
     password = passwordEncriptada;
 
-    console.log(name)
     let error = "Falta el campo ";
+
+    console.log(validarDniRepetido(dni))
 
     if(name === undefined){
         error += "name"
@@ -28,7 +29,10 @@ async function registrarUsuario(req, res) {
     } else if (dni === undefined) {
         error += "dni"
         res.status(400).send({error: error});
-    } else if (password === undefined) {
+    } else if(validarDniRepetido(dni)){
+        error = "¡DNI repetido!"
+        res.status(400).send({error: error});
+    }else if (password === undefined) {
         error += "password"
         res.status(400).send({error: error});
     } else {
@@ -41,4 +45,28 @@ async function registrarUsuario(req, res) {
   }
 }
 
-export { getDescription, registrarUsuario };
+function validarDniRepetido(dni){
+    let repetido = false;
+    const usuarios = UsuarioModel.find({});
+
+    for (let i = 0; i < usuarios.length; i++) {
+        const usuario = usuarios[i];
+        if (usuario.dni === dni) {
+            repetido = true
+        }
+    }
+
+    return repetido;
+
+}
+
+async function obtenerUsuarios(req, res) {
+    try {
+        const usuarios = await UsuarioModel.find({});
+        res.send(usuarios);
+      } catch (err) {
+        res.status(500).send({error: err});
+      }
+}
+
+export { getDescription, registrarUsuario,  obtenerUsuarios};
