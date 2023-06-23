@@ -135,10 +135,9 @@ async function crearMensaje(req, res) {
     }
   }
 
-async function obtenerMensajeoPorUsuario(req, res){
+async function obtenerMensajesPorUsuario(req, res){
 
     try {
-
         let userId = req.params.userId;
 
         let mensajes = [];
@@ -152,12 +151,33 @@ async function obtenerMensajeoPorUsuario(req, res){
         }
 
         res.send(mensajes);
-
     }catch (err) {
         res.status(500).send({error: err});
     }
 
-    
+}
+
+async function eliminarMensajePorID(req, res){
+
+    try {
+        let messageId = req.params.messageId;
+
+        let mensaje = null;
+        const mensajesBD = await MensajeModel.find({});
+
+        for (let i = 0; i < mensajesBD.length; i++) {
+            const mensajeArray = mensajesBD[i];
+            if (mensajeArray._id === messageId) {
+                mensaje = mensajeArray;
+            }
+        }
+
+        await MensajeModel.deleteOne(mensaje);
+
+        res.status(204);
+    }catch (err) {
+        res.status(500).send({error: err});
+    }
 
 }
 
@@ -167,5 +187,6 @@ export { getDescription,
          obtenerUsuarios,
          login,
          crearMensaje,
-         obtenerMensajeoPorUsuario
+         obtenerMensajesPorUsuario,
+         eliminarMensajePorID
         };
