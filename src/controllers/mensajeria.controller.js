@@ -135,10 +135,37 @@ async function crearMensaje(req, res) {
     }
   }
 
+async function obtenerMensajeoPorUsuario(req, res){
+
+    try {
+
+        let userId = req.params.userId;
+
+        let mensajes = [];
+        const mensajesBD = await MensajeModel.find({});
+
+        for (let i = 0; i < mensajesBD.length; i++) {
+            const mensaje = mensajesBD[i];
+            if (mensaje.userId === userId) {
+                mensajes.push(mensaje);
+            }
+        }
+
+        res.send(mensajes);
+
+    }catch (err) {
+        res.status(500).send({error: err});
+    }
+
+    
+
+}
+
 
 export { getDescription, 
          registrarUsuario,  
          obtenerUsuarios,
          login,
-         crearMensaje
+         crearMensaje,
+         obtenerMensajeoPorUsuario
         };
